@@ -28,19 +28,22 @@ public class DatabaseInitializer implements CommandLineRunner {
     private void initUsers() {
         List<User> users = Arrays.asList(
                 User.builder()
-                        .username("admin")
+                        .firstName("Admin")
+                        .lastName("User")
                         .email("admin@example.com")
                         .password(passwordEncoder.encode("admin123"))
                         .role(Role.ADMIN)
                         .build(),
                 User.builder()
-                        .username("user")
+                        .firstName("Normal")
+                        .lastName("User")
                         .email("user@example.com")
                         .password(passwordEncoder.encode("user123"))
                         .role(Role.USER)
                         .build(),
                 User.builder()
-                        .username("developer")
+                        .firstName("Dev")
+                        .lastName("User")
                         .email("dev@example.com")
                         .password(passwordEncoder.encode("dev123"))
                         .role(Role.USER)

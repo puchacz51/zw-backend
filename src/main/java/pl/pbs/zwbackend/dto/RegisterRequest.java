@@ -8,8 +8,12 @@ import lombok.Data;
 @Data
 public class RegisterRequest {
     @NotBlank
-    @Size(min = 3, max = 50)
-    private String username;
+    @Size(min = 2, max = 50)
+    private String firstName;
+
+    @NotBlank
+    @Size(min = 2, max = 50)
+    private String lastName;
 
     @NotBlank
     @Size(max = 100)

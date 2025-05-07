@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import pl.pbs.zwbackend.model.User;
 
 import java.security.Key;
 import java.util.Date;
@@ -31,18 +32,23 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails, jwtAccessExpirationMs);
+    public String generateAccessToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole().name());
+        claims.put("firstName", user.getFirstName());
+        claims.put("lastName", user.getLastName());
+        return generateToken(claims, user.getEmail(), jwtAccessExpirationMs);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails, jwtRefreshExpirationMs);
+        return generateToken(new HashMap<>(), userDetails.getUsername(), jwtRefreshExpirationMs);
     }
 
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, int expiration) {
+    private String generateToken(Map<String, Object> extraClaims, String subject, int expiration) {
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -67,8 +73,8 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String email = extractUsername(token);
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
