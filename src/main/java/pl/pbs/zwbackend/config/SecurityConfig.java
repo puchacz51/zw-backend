@@ -44,7 +44,7 @@ public class SecurityConfig {
             "/api/auth/register",
             "/api/auth/refreshtoken",
             "/api/auth/forgot-password",
-            "/api/auth/reset-password"
+            "/api/auth/reset-password",
     };
 
     private static final String[] PUBLIC_RESOURCES_WHITELIST = {

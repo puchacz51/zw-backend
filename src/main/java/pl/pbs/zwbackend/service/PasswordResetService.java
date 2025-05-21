@@ -21,6 +21,7 @@ public class PasswordResetService {
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
+    private final EmailService emailService;
 
     @Transactional
     public void createPasswordResetTokenForUser(String email) {
@@ -31,15 +32,16 @@ public class PasswordResetService {
         }
         User user = userOptional.get();
 
-        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
+        tokenRepository.deleteByUser(user);
+        tokenRepository.flush(); // Explicitly flush changes to the database
 
         String token = UUID.randomUUID().toString();
         PasswordResetToken myToken = new PasswordResetToken(token, user);
         tokenRepository.save(myToken);
 
-        logger.info("Password reset token generated for user (email {}): {}. Email would be sent with this token.", user.getEmail(), token);
-        System.out.println("Password reset token for " + user.getEmail() + ": " + token);
-        System.out.println("Reset link (example): http://localhost:3000/reset-password?token=" + token);
+        emailService.sendPasswordResetEmail(user.getEmail(), user.getFirstName(), token);
+
+        logger.info("Password reset token generated for user (email {}). Email has been sent.", user.getEmail());
     }
 
     public Optional<User> validatePasswordResetToken(String token) {
