@@ -10,6 +10,7 @@ import pl.pbs.zwbackend.exception.ResourceNotFoundException;
 import pl.pbs.zwbackend.exception.UnauthorizedOperationException;
 import pl.pbs.zwbackend.model.Project;
 import pl.pbs.zwbackend.model.User;
+import pl.pbs.zwbackend.model.enums.ProjectStatus;
 import pl.pbs.zwbackend.repository.ProjectRepository;
 import pl.pbs.zwbackend.repository.UserRepository;
 
@@ -33,6 +34,7 @@ public class ProjectService {
                 .description(projectRequest.getDescription())
                 .startDate(projectRequest.getStartDate())
                 .endDate(projectRequest.getEndDate())
+                .status(projectRequest.getStatus() != null ? projectRequest.getStatus() : ProjectStatus.NOT_STARTED)
                 .createdBy(currentUser)
                 .build();
 
@@ -78,6 +80,9 @@ public class ProjectService {
         project.setDescription(projectRequest.getDescription());
         project.setStartDate(projectRequest.getStartDate());
         project.setEndDate(projectRequest.getEndDate());
+        if (projectRequest.getStatus() != null) {
+            project.setStatus(projectRequest.getStatus());
+        }
 
         Project updatedProject = projectRepository.save(project);
         return convertToResponse(updatedProject);
@@ -112,6 +117,7 @@ public class ProjectService {
                 .description(project.getDescription())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
+                .status(project.getStatus())
                 .createdBy(userSummary)
                 .createdAt(project.getCreatedAt())
                 .build();

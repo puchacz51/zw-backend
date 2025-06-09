@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.pbs.zwbackend.model.enums.ProjectStatus;
 
 import java.time.LocalDate;
 
@@ -25,4 +26,6 @@ public class ProjectRequest {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    private ProjectStatus status;
 }

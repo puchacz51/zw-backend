@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.pbs.zwbackend.model.Project;
 import pl.pbs.zwbackend.model.User;
+import pl.pbs.zwbackend.model.enums.ProjectStatus;
 import pl.pbs.zwbackend.model.enums.Role;
 import pl.pbs.zwbackend.repository.ProjectRepository;
 import pl.pbs.zwbackend.repository.UserRepository;
@@ -78,6 +79,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 .description("Rozwój nowego systemu do zarządzania zadaniami i zasobami w firmie, wykorzystujący najnowsze technologie.")
                 .startDate(LocalDate.now().plusDays(5))
                 .endDate(LocalDate.now().plusMonths(8))
+                .status(ProjectStatus.NOT_STARTED)
                 .createdBy(adminUser)
                 .build();
 
@@ -86,6 +88,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 .description("Stworzenie aplikacji mobilnej na platformy iOS i Android, umożliwiającej klientom łatwy dostęp do usług firmy.")
                 .startDate(LocalDate.now().plusMonths(1))
                 .endDate(LocalDate.now().plusMonths(10))
+                .status(ProjectStatus.UNDER_REVIEW)
                 .createdBy(adminUser)
                 .build();
         
@@ -95,12 +98,13 @@ public class DatabaseInitializer implements CommandLineRunner {
         Project project3 = Project.builder()
                 .name("Organizacja Konferencji Branżowej")
                 .description("Kompleksowe przygotowanie i przeprowadzenie konferencji dla specjalistów z branży IT.")
-                .startDate(LocalDate.now().minusMonths(1)) // Project already started
+                .startDate(LocalDate.now().minusMonths(1))
                 .endDate(LocalDate.now().plusMonths(2))
+                .status(ProjectStatus.IN_PROGRESS)
                 .createdBy(normalUser)
                 .build();
 
         projectRepository.saveAll(Arrays.asList(project1, project2, project3));
-        System.out.println("Zainicjalizowano testowe projekty.");
+        System.out.println("Zainicjalizowano testowe projekty ze statusami.");
     }
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.pbs.zwbackend.model.enums.ProjectStatus;
 
 import java.time.LocalDate;
 
@@ -19,4 +20,5 @@ public class ProjectResponse {
     private LocalDate endDate;
     private UserSummaryResponse createdBy;
     private LocalDate createdAt;
+    private ProjectStatus status;
 }
