@@ -49,7 +49,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_RESOURCES_WHITELIST = {
             "/api/images/{subDirectory}/{fileName:.+}", // Path for ImageController
-            "/api/images/{subDirectory}/thumbnails/{fileName:.+}" // Path for ImageController thumbnails
+            "/api/images/{subDirectory}/thumbnails/{fileName:.+}", // Path for ImageController thumbnails
+            "/api/users/avatar/{fileName:.+}" // Path for avatar images
     };
 
 

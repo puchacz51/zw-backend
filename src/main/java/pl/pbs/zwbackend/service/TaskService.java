@@ -26,6 +26,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public TaskResponse createTask(TaskCreateRequest taskRequest, String userEmail) {
@@ -138,13 +139,7 @@ public class TaskService {
     private TaskResponse convertToResponse(Task task) {
         UserSummaryResponse assignedToSummary = null;
         if (task.getAssignedTo() != null) {
-            User assignedUser = task.getAssignedTo();
-            assignedToSummary = UserSummaryResponse.builder()
-                    .id(assignedUser.getId())
-                    .firstName(assignedUser.getFirstName())
-                    .lastName(assignedUser.getLastName())
-                    .email(assignedUser.getEmail())
-                    .build();
+            assignedToSummary = userService.convertToUserSummaryResponse(task.getAssignedTo());
         }
 
         return TaskResponse.builder()

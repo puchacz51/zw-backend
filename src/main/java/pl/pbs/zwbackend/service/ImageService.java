@@ -31,6 +31,7 @@ public class ImageService {
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
     private final FileStorageService fileStorageService;
+    private final UserService userService;
 
     @Transactional
     public ImageResponse uploadImage(MultipartFile file, String subDirectory, String userEmail,
@@ -124,13 +125,7 @@ public class ImageService {
                 .path(image.getStoredFileName())
                 .toUriString();
 
-        User uploadedByUser = image.getUploadedBy();
-        UserSummaryResponse userSummary = UserSummaryResponse.builder()
-                .id(uploadedByUser.getId())
-                .firstName(uploadedByUser.getFirstName())
-                .lastName(uploadedByUser.getLastName())
-                .email(uploadedByUser.getEmail())
-                .build();
+        UserSummaryResponse userSummary = userService.convertToUserSummaryResponse(image.getUploadedBy());
 
         return ImageResponse.builder()
                 .id(image.getId())

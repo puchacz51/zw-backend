@@ -31,6 +31,12 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @Column(length = 255)
+    private String avatarFileName;
+
+    @Column(length = 50)
+    private String avatarContentType;
+
     @JsonIgnore
     @Column(nullable = false)
     private String password;

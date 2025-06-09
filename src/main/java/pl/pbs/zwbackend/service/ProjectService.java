@@ -23,6 +23,7 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public ProjectResponse createProject(ProjectRequest projectRequest, String userEmail) {
@@ -103,13 +104,7 @@ public class ProjectService {
     }
 
     private ProjectResponse convertToResponse(Project project) {
-        User createdByUser = project.getCreatedBy();
-        UserSummaryResponse userSummary = UserSummaryResponse.builder()
-                .id(createdByUser.getId())
-                .firstName(createdByUser.getFirstName())
-                .lastName(createdByUser.getLastName())
-                .email(createdByUser.getEmail())
-                .build();
+        UserSummaryResponse userSummary = userService.convertToUserSummaryResponse(project.getCreatedBy());
 
         return ProjectResponse.builder()
                 .id(project.getId())

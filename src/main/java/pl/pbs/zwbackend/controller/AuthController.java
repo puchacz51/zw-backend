@@ -18,6 +18,8 @@ import pl.pbs.zwbackend.repository.UserRepository;
 import pl.pbs.zwbackend.security.JwtTokenProvider;
 import pl.pbs.zwbackend.service.PasswordResetService;
 import pl.pbs.zwbackend.service.RefreshTokenService;
+import pl.pbs.zwbackend.service.UserService;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Optional;
 
@@ -31,6 +33,7 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final PasswordResetService passwordResetService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -50,15 +53,24 @@ public class AuthController {
         String accessToken = jwtTokenProvider.generateAccessToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return ResponseEntity.ok(new TokenResponse(
-                accessToken,
-                refreshToken.getToken(),
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getRole()
-        ));
+        String avatarUrl = null;
+        if (user.getAvatarFileName() != null) {
+            avatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/api/users/avatar/")
+                    .path(user.getAvatarFileName())
+                    .toUriString();
+        }
+
+        return ResponseEntity.ok(TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getToken())
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .avatarUrl(avatarUrl)
+                .build());
     }
 
     @PostMapping("/register")
@@ -104,15 +116,24 @@ public class AuthController {
         User user = refreshTokenEntity.getUser();
         String newAccessToken = jwtTokenProvider.generateAccessToken(user);
 
-        return ResponseEntity.ok(new TokenResponse(
-                newAccessToken,
-                requestRefreshToken,
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getRole()
-        ));
+        String avatarUrl = null;
+        if (user.getAvatarFileName() != null) {
+            avatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/api/users/avatar/")
+                    .path(user.getAvatarFileName())
+                    .toUriString();
+        }
+
+        return ResponseEntity.ok(TokenResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(requestRefreshToken)
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .avatarUrl(avatarUrl)
+                .build());
     }
 
     @PostMapping("/logout")
