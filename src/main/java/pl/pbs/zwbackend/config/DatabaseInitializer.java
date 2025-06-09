@@ -6,9 +6,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.pbs.zwbackend.model.Project;
 import pl.pbs.zwbackend.model.User;
+import pl.pbs.zwbackend.model.Task;
 import pl.pbs.zwbackend.model.enums.ProjectStatus;
 import pl.pbs.zwbackend.model.enums.Role;
+import pl.pbs.zwbackend.model.enums.TaskStatus;
 import pl.pbs.zwbackend.repository.ProjectRepository;
+import pl.pbs.zwbackend.repository.TaskRepository;
 import pl.pbs.zwbackend.repository.UserRepository;
 
 import java.time.LocalDate;
@@ -21,7 +24,8 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ProjectRepository projectRepository; // Added ProjectRepository
+    private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
 
     @Override
     public void run(String... args) {
@@ -31,11 +35,21 @@ public class DatabaseInitializer implements CommandLineRunner {
             usersWereInitialized = true;
         }
 
+        boolean projectsWereInitialized = false;
         if (projectRepository.count() == 0) {
             if (usersWereInitialized || userRepository.findByEmail("admin@example.com").isPresent()) {
                 initProjects();
+                projectsWereInitialized = true;
             } else {
                 System.out.println("Admin user not found, skipping project initialization. Ensure users are created first or exist.");
+            }
+        }
+
+        if (taskRepository.count() == 0) {
+            if (projectsWereInitialized || projectRepository.count() > 0) {
+                initTasks();
+            } else {
+                System.out.println("No projects found, skipping task initialization. Ensure projects are created first or exist.");
             }
         }
     }
@@ -106,5 +120,69 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         projectRepository.saveAll(Arrays.asList(project1, project2, project3));
         System.out.println("Zainicjalizowano testowe projekty ze statusami.");
+    }
+
+    private void initTasks() {
+        User johnDoe = userRepository.findByEmail("user@example.com")
+                .orElseThrow(() -> new RuntimeException("User not found for task initialization."));
+        User janeDoe = userRepository.findByEmail("dev@example.com")
+                .orElseThrow(() -> new RuntimeException("Dev user not found for task initialization."));
+        User adminUser = userRepository.findByEmail("admin@example.com")
+                .orElseThrow(() -> new RuntimeException("Admin user not found for task initialization."));
+
+        List<Project> projects = projectRepository.findAll();
+        if (projects.size() < 2) {
+            System.out.println("Not enough projects found for task initialization.");
+            return;
+        }
+
+        Project project1 = projects.get(0);
+        Project project2 = projects.get(1);
+
+        List<Task> tasks = Arrays.asList(
+                Task.builder()
+                        .name("Design UI Mockups")
+                        .description("Create UI mockups for the landing page and dashboard")
+                        .status(TaskStatus.COMPLETED)
+                        .project(project1)
+                        .assignedTo(janeDoe)
+                        .dueDate(LocalDate.now().plusDays(7))
+                        .build(),
+                Task.builder()
+                        .name("Implement Authentication")
+                        .description("Implement user authentication system with JWT")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .project(project1)
+                        .assignedTo(johnDoe)
+                        .dueDate(LocalDate.now().plusDays(14))
+                        .build(),
+                Task.builder()
+                        .name("API Integration")
+                        .description("Integrate frontend with backend APIs")
+                        .status(TaskStatus.TODO)
+                        .project(project1)
+                        .assignedTo(johnDoe)
+                        .dueDate(LocalDate.now().plusDays(21))
+                        .build(),
+                Task.builder()
+                        .name("Database Design")
+                        .description("Design database schema for the project")
+                        .status(TaskStatus.COMPLETED)
+                        .project(project2)
+                        .assignedTo(adminUser)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .build(),
+                Task.builder()
+                        .name("Unit Testing")
+                        .description("Write unit tests for core functionality")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .project(project2)
+                        .assignedTo(adminUser)
+                        .dueDate(LocalDate.now().plusDays(10))
+                        .build()
+        );
+
+        taskRepository.saveAll(tasks);
+        System.out.println("Zainicjalizowano testowe zadania.");
     }
 }
