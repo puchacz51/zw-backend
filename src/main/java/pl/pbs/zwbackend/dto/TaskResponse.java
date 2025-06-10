@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.pbs.zwbackend.model.enums.ProjectStatus;
+import pl.pbs.zwbackend.model.enums.TaskStatus;
 
 import java.time.LocalDate;
 
@@ -12,13 +12,13 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectResponse {
+public class TaskResponse {
     private Long id;
     private String name;
     private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private UserSummaryResponse createdBy;
+    private TaskStatus status;
+    private Long projectId;
+    private UserSummaryResponse assignedTo;
+    private LocalDate dueDate;
     private LocalDate createdAt;
-    private ProjectStatus status;
 }
