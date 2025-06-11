@@ -52,6 +52,9 @@ public class SecurityConfig {
             "/api/images/{subDirectory}/thumbnails/{fileName:.+}" // Path for ImageController thumbnails
     };
 
+    private static final String[] WEBSOCKET_WHITELIST = {
+            "/ws/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -62,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .requestMatchers(PUBLIC_RESOURCES_WHITELIST).permitAll()
+                        .requestMatchers(WEBSOCKET_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

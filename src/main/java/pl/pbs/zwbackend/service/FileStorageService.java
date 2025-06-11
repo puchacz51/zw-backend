@@ -39,7 +39,7 @@ public class FileStorageService {
      * @throws RuntimeException if the file storage location cannot be initialized.
      */
     @Autowired
-    public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
+    public FileStorageService(@Value("${file.upload-dir:./uploads}") String uploadDir) {
         this.configuredUploadDir = uploadDir; // Store the original configured value
         logger.info("FileStorageService constructor: Injected 'file.upload-dir' = '{}'", uploadDir);
 
