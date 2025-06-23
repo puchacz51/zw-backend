@@ -45,12 +45,11 @@ public class SecurityConfig {
             "/api/auth/refreshtoken",
             "/api/auth/forgot-password",
             "/api/auth/reset-password",
-    };
-
-    private static final String[] PUBLIC_RESOURCES_WHITELIST = {
+    };    private static final String[] PUBLIC_RESOURCES_WHITELIST = {
             "/api/images/{subDirectory}/{fileName:.+}", // Path for ImageController
             "/api/images/{subDirectory}/thumbnails/{fileName:.+}", // Path for ImageController thumbnails
-            "/api/users/avatar/{fileName:.+}" // Path for avatar images
+            "/api/users/avatar/{fileName:.+}", // Path for avatar images
+            "/ws/**" // WebSocket endpoints
     };
 
 
