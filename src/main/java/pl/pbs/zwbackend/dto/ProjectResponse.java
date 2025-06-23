@@ -19,8 +19,8 @@ public class ProjectResponse {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-    private UserSummaryResponse createdBy;
-    private LocalDate createdAt;
+    private UserSummaryResponse createdBy;    private LocalDate createdAt;
     private ProjectStatus status;
     private List<ProjectUserResponse> assignedUsers;
+    private Long commentCount;
 }

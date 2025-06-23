@@ -14,6 +14,7 @@ import pl.pbs.zwbackend.model.User;
 import pl.pbs.zwbackend.model.enums.ProjectStatus;
 import pl.pbs.zwbackend.repository.ProjectRepository;
 import pl.pbs.zwbackend.repository.ProjectUserRepository;
+import pl.pbs.zwbackend.repository.ProjectCommentRepository;
 import pl.pbs.zwbackend.repository.UserRepository;
 
 import java.util.List;
@@ -21,12 +22,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProjectService {
-
-    private final ProjectRepository projectRepository;
+public class ProjectService {    private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final UserService userService;
     private final ProjectUserRepository projectUserRepository;
+    private final ProjectCommentRepository projectCommentRepository;
 
     @Transactional
     public ProjectResponse createProject(ProjectRequest projectRequest, String userEmail) {
@@ -104,9 +104,7 @@ public class ProjectService {
         }
         // Consider related entities (tasks, files) before deletion if cascading is not set
         projectRepository.delete(project);
-    }
-
-    private ProjectResponse convertToResponse(Project project) {
+    }    private ProjectResponse convertToResponse(Project project) {
         UserSummaryResponse userSummary = userService.convertToUserSummaryResponse(project.getCreatedBy());
         
         // Get assigned users
@@ -118,6 +116,9 @@ public class ProjectService {
                         .build())
                 .collect(Collectors.toList());
 
+        // Get comment count
+        Long commentCount = projectCommentRepository.countByProjectId(project.getId());
+
         return ProjectResponse.builder()
                 .id(project.getId())
                 .name(project.getName())
@@ -128,6 +129,7 @@ public class ProjectService {
                 .createdBy(userSummary)
                 .createdAt(project.getCreatedAt())
                 .assignedUsers(assignedUsers)
+                .commentCount(commentCount)
                 .build();
     }
 }
