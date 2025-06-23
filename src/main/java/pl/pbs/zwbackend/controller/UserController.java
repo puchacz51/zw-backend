@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.pbs.zwbackend.dto.UserSummaryResponse;
 import pl.pbs.zwbackend.service.UserService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -42,5 +43,11 @@ public class UserController {
     public ResponseEntity<UserSummaryResponse> getProfile(@AuthenticationPrincipal UserDetails currentUser) {
         UserSummaryResponse response = userService.getUserProfile(currentUser.getUsername());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserSummaryResponse>> getAllUsers() {
+        List<UserSummaryResponse> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }

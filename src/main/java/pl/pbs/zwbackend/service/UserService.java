@@ -17,6 +17,7 @@ import pl.pbs.zwbackend.repository.UserRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -87,6 +88,12 @@ public class UserService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", userEmail));
         return convertToUserSummaryResponse(user);
+    }
+
+    public List<UserSummaryResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToUserSummaryResponse)
+                .collect(Collectors.toList());
     }
 
     public UserSummaryResponse convertToUserSummaryResponse(User user) {

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pbs.zwbackend.dto.ProjectRequest;
 import pl.pbs.zwbackend.dto.ProjectResponse;
+import pl.pbs.zwbackend.dto.ProjectUserResponse;
 import pl.pbs.zwbackend.dto.UserSummaryResponse;
 import pl.pbs.zwbackend.exception.ResourceNotFoundException;
 import pl.pbs.zwbackend.exception.UnauthorizedOperationException;
@@ -12,6 +13,7 @@ import pl.pbs.zwbackend.model.Project;
 import pl.pbs.zwbackend.model.User;
 import pl.pbs.zwbackend.model.enums.ProjectStatus;
 import pl.pbs.zwbackend.repository.ProjectRepository;
+import pl.pbs.zwbackend.repository.ProjectUserRepository;
 import pl.pbs.zwbackend.repository.UserRepository;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final ProjectUserRepository projectUserRepository;
 
     @Transactional
     public ProjectResponse createProject(ProjectRequest projectRequest, String userEmail) {
@@ -105,6 +108,15 @@ public class ProjectService {
 
     private ProjectResponse convertToResponse(Project project) {
         UserSummaryResponse userSummary = userService.convertToUserSummaryResponse(project.getCreatedBy());
+        
+        // Get assigned users
+        List<ProjectUserResponse> assignedUsers = projectUserRepository.findByProjectIdWithUsers(project.getId())
+                .stream()
+                .map(pu -> ProjectUserResponse.builder()
+                        .user(userService.convertToUserSummaryResponse(pu.getUser()))
+                        .role(pu.getRole())
+                        .build())
+                .collect(Collectors.toList());
 
         return ProjectResponse.builder()
                 .id(project.getId())
@@ -115,6 +127,7 @@ public class ProjectService {
                 .status(project.getStatus())
                 .createdBy(userSummary)
                 .createdAt(project.getCreatedAt())
+                .assignedUsers(assignedUsers)
                 .build();
     }
 }

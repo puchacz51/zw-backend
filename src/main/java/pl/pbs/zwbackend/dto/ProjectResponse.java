@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import pl.pbs.zwbackend.model.enums.ProjectStatus;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,4 +22,5 @@ public class ProjectResponse {
     private UserSummaryResponse createdBy;
     private LocalDate createdAt;
     private ProjectStatus status;
+    private List<ProjectUserResponse> assignedUsers;
 }
