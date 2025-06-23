@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "project_files")
@@ -20,10 +20,19 @@ public class ProjectFile {
     private Long id;
 
     @Column(nullable = false, length = 255)
-    private String fileName;
+    private String originalFileName;
 
     @Column(nullable = false, length = 500, unique = true)
-    private String filePath;
+    private String storedFileName; // UUID filename on disk
+
+    @Column(nullable = false)
+    private String contentType;
+
+    @Column(nullable = false)
+    private Long fileSize;
+
+    @Column(length = 1000)
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by", nullable = false)
@@ -35,5 +44,5 @@ public class ProjectFile {
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDate uploadDate;
+    private LocalDateTime uploadDate;
 }
