@@ -1,15 +1,16 @@
 package pl.pbs.zwbackend.model.enums;
 
-public enum TaskStatus {
-    TODO("To Do"),
-    IN_PROGRESS("In Progress"),
-    REVIEW("Review"),
+public enum ProjectStatus {
+    NOT_STARTED("Not Started"),
+    IN_PROGRESS("In Progress"), 
     COMPLETED("Completed"),
-    BLOCKED("Blocked");
+    ON_HOLD("On Hold"),
+    CANCELED("Canceled"),
+    UNDER_REVIEW("Under Review");
 
     private final String displayName;
 
-    TaskStatus(String displayName) {
+    ProjectStatus(String displayName) {
         this.displayName = displayName;
     }
 

@@ -7,40 +7,43 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "project_files")
+@Table(name = "images")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProjectFile {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String originalFileName;
 
-    @Column(nullable = false, length = 500, unique = true)
-    private String storedFileName; // UUID filename on disk
+    @Column(nullable = false, unique = true)
+    private String storedFileName; // UUID or unique name on disk
 
     @Column(nullable = false)
     private String contentType;
 
     @Column(nullable = false)
-    private Long fileSize;
+    private Long size;
 
-    @Column(length = 1000)
-    private String description;
+    @Column(nullable = false)
+    private String subDirectory; // e.g., "avatars", "project_images", "task_images"
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uploaded_by", nullable = false)
+    @JoinColumn(name = "uploaded_by_user_id", nullable = false)
     private User uploadedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name = "project_id")
     private Project project;
+
+    @Column(length = 500)
+    private String description;
 
     @CreationTimestamp
     @Column(updatable = false)

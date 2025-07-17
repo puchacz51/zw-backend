@@ -5,10 +5,22 @@ services:
       - 'POSTGRES_DB=${DB_NAME:-mydatabase}'
       - 'POSTGRES_PASSWORD=${DB_PASSWORD:-secret}'
       - 'POSTGRES_USER=${DB_USER:-user}'
+      - 'POSTGRES_HOST_AUTH_METHOD=md5'
+      - 'POSTGRES_INITDB_ARGS=--auth-host=md5'
     ports:
       - '${DB_PORT:-5432}:5432'
     env_file:
       - ./.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Opcjonalnie, jeśli chcesz użyć własnego pliku pg_hba.conf:
+      # - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+    command: >
+      bash -c "
+        docker-entrypoint.sh postgres
+        -c 'listen_addresses=*'
+        -c 'password_encryption=md5'
+      "
   pgadmin:
     image: dpage/pgadmin4
     ports:
@@ -19,3 +31,8 @@ services:
       PGADMIN_LISTEN_PORT: ${PGADMIN_LISTEN_PORT:-5050}
     env_file:
       - ./.env
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

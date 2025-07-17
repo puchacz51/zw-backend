@@ -3,6 +3,7 @@ package pl.pbs.zwbackend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import pl.pbs.zwbackend.model.enums.ProjectStatus;
 
 import java.time.LocalDate;
 
@@ -35,4 +36,9 @@ public class Project {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDate createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private ProjectStatus status = ProjectStatus.NOT_STARTED;
 }

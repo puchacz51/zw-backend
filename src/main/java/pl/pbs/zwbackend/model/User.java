@@ -22,11 +22,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String username;
+    @Column(nullable = false, length = 50)
+    private String firstName;
+
+    @Column(nullable = false, length = 50)
+    private String lastName;
 
     @Column(nullable = false, unique = true, length = 100)
     private String email;
+
+    @Column(length = 255)
+    private String avatarFileName;
+
+    @Column(length = 50)
+    private String avatarContentType;
 
     @JsonIgnore
     @Column(nullable = false)
