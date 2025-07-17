@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pbs.zwbackend.config.FileStorageProperties;
+import pl.pbs.zwbackend.exception.FileStorageException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,7 @@ public class FileStorageService {
         try {
             Files.createDirectories(this.baseFileStorageLocation);
         } catch (Exception ex) {
-            throw new RuntimeException("Could not create the base directory where the uploaded files will be stored.", ex);
+            throw new FileStorageException("Could not create the base directory where the uploaded files will be stored.", ex);
         }
     }
 
@@ -40,7 +41,7 @@ public class FileStorageService {
         try {
             Files.createDirectories(subDirPath);
         } catch (IOException ex) {
-            throw new RuntimeException("Could not create the sub-directory: " + subDirectory, ex);
+            throw new FileStorageException("Could not create the sub-directory: " + subDirectory, ex);
         }
         return subDirPath.resolve(fileName);
     }
@@ -56,7 +57,7 @@ public class FileStorageService {
 
         try {
             if (storedFileName.contains("..")) {
-                throw new RuntimeException("Sorry! Filename contains invalid path sequence " + storedFileName);
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + storedFileName);
             }
 
             Path targetLocation = getTargetLocation(subDirectory, storedFileName);
@@ -64,7 +65,7 @@ public class FileStorageService {
 
             return storedFileName;
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store file " + storedFileName + ". Please try again!", ex);
+            throw new FileStorageException("Could not store file " + storedFileName + ". Please try again!", ex);
         }
     }
 
@@ -78,14 +79,14 @@ public class FileStorageService {
 
         try {
             if (storedFileName.contains("..")) {
-                throw new RuntimeException("Sorry! Filename contains invalid path sequence " + storedFileName);
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + storedFileName);
             }
             Path targetLocation = getTargetLocation(subDirectory, storedFileName);
             Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
             inputStream.close();
             return storedFileName;
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store file " + storedFileName + ". Please try again!", ex);
+            throw new FileStorageException("Could not store file " + storedFileName + ". Please try again!", ex);
         }
     }
 
@@ -96,10 +97,10 @@ public class FileStorageService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new RuntimeException("File not found " + fileName + " in " + subDirectory);
+                throw new FileStorageException("File not found " + fileName + " in " + subDirectory);
             }
         } catch (MalformedURLException ex) {
-            throw new RuntimeException("File not found " + fileName + " in " + subDirectory, ex);
+            throw new FileStorageException("File not found " + fileName + " in " + subDirectory, ex);
         }
     }
 
@@ -108,7 +109,7 @@ public class FileStorageService {
             Path filePath = this.baseFileStorageLocation.resolve(subDirectory).resolve(fileName).normalize();
             Files.deleteIfExists(filePath);
         } catch (IOException ex) {
-            throw new RuntimeException("Could not delete file " + fileName + " from " + subDirectory + ". Please try again!", ex);
+            throw new FileStorageException("Could not delete file " + fileName + " from " + subDirectory + ". Please try again!", ex);
         }
     }
 }

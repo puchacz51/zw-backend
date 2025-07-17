@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.pbs.zwbackend.dto.UserSummaryResponse;
+import pl.pbs.zwbackend.dto.RegisterRequest;
 import pl.pbs.zwbackend.exception.ResourceNotFoundException;
 import pl.pbs.zwbackend.model.User;
+import pl.pbs.zwbackend.model.enums.Role;
 import pl.pbs.zwbackend.repository.UserRepository;
 
 import java.util.Arrays;
@@ -32,6 +34,20 @@ public class UserService {
     private static final List<String> ALLOWED_CONTENT_TYPES = Arrays.asList(
             "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
     );
+
+    @Transactional
+    public User createUser(RegisterRequest registerRequest) {
+        User user = User.builder()
+                .firstName(registerRequest.getFirstName())
+                .lastName(registerRequest.getLastName())
+                .email(registerRequest.getEmail())
+                .role(Role.USER)
+                .build();
+
+        user.setPassword(registerRequest.getPassword());
+
+        return userRepository.save(user);
+    }
 
     @Transactional
     public UserSummaryResponse uploadAvatar(MultipartFile file, String userEmail) {
